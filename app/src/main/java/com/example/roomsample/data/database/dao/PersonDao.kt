@@ -1,32 +1,34 @@
 package com.example.roomsample.data.database.dao
 
-import androidx.lifecycle.LiveData
+import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.roomsample.data.database.entities.PersonEntity
 
+@Dao
 interface PersonDao {
 
-    @Query("SELECT * FROM PersonEntity")
+    @Query("SELECT * FROM person_table ORDER BY name DESC")
+    suspend fun getAllPerson(): List<PersonEntity>
     //para hacer que nos responda de forma reactiva utilizamos live data
     //fun getAllPerson(): LiveData<List<PersonEntity>>
-    suspend fun getAllPerson(): LiveData<List<PersonEntity>>
 
-    @Query("SELECT * FROM PersonEntity WHERE id = :Id")
-    //utilizamos suspend para trabajar con corutinas y
-    // que no se ejecuten en el hilo principal.
-    suspend fun getByIdPerson(Id: Int): PersonEntity
-
-    @Update
-    suspend fun upDatePerson(personEntity: PersonEntity)
-
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPerson(people : List<PersonEntity>)
 
-    @Delete
-    suspend fun deletePerson(personEntity: PersonEntity)
+    //    @Query("SELECT * FROM person_table WHERE id = :Id")
+    //    utilizamos suspend para trabajar con corutinas y
+    //    que no se ejecuten en el hilo principal.
+    //    suspend fun getByIdPerson(Id: Int): PersonEntity
+
+    @Update// esto no lo explica no se bien como escribirlo preguntar a marco
+    suspend fun upDatePerson(personEntity: PersonEntity)
+
+    @Query("DELETE FROM person_table")
+    suspend fun deleteAllPerson()
 
 
 }
